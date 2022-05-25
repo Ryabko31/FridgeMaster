@@ -1,0 +1,287 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "FridgeMaster_api",
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Sign in",
+                "description": "Login by email, password",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "13@test.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "qazwer123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "422": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong email address or password. Please try again"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/locations/{location_id}/bookingCalulte": {
+            "post": {
+                "tags": [
+                    "booking"
+                ],
+                "description": "Calculate booking",
+                "operationId": "bookingCalulte",
+                "parameters": [
+                    {
+                        "name": "location_id",
+                        "in": "path",
+                        "description": "Buscar por estado",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "data to calculate",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "volume",
+                                    "temperature",
+                                    "date_at",
+                                    "date_to"
+                                ],
+                                "properties": {
+                                    "volume": {
+                                        "type": "integer",
+                                        "example": "20"
+                                    },
+                                    "temperature": {
+                                        "type": "integer",
+                                        "example": "2"
+                                    },
+                                    "date_at": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2022-05-01"
+                                    },
+                                    "date_to": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2022-05-01"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Opps"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/locations/{location_id}/bookingConfirm": {
+            "post": {
+                "tags": [
+                    "booking"
+                ],
+                "description": "Confirm booking",
+                "operationId": "bookingConfirm",
+                "parameters": [
+                    {
+                        "name": "location_id",
+                        "in": "path",
+                        "description": "location",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "data of booking",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "booking"
+                                ],
+                                "properties": {
+                                    "booking": {
+                                        "type": "object",
+                                        "example": {
+                                            "block_id": [
+                                                1,
+                                                2,
+                                                3,
+                                                4
+                                            ],
+                                            "temperature": 2,
+                                            "volume": 2,
+                                            "price": 0,
+                                            "date_at": "2022-05-01",
+                                            "date_to": "2022-05-01"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "booking_id": {
+                                            "type": "integer",
+                                            "example": "800"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not authorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/locations": {
+            "get": {
+                "tags": [
+                    "locations"
+                ],
+                "description": "data of locations",
+                "operationId": "4a95f25c1e13530115fd3fd6961b92de",
+                "responses": {
+                    "default": {
+                        "description": "list of locations with free room"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "200": {
+                "description": "Success",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "user": {
+                                    "$ref": "App\\Models\\User"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "apiAuth": {
+                "type": "http",
+                "description": "Login with email and password to get the authentication token",
+                "name": "Token based Based",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

@@ -1,0 +1,69 @@
+version: "3.5"
+
+services:
+
+  web:
+    container_name: web
+    build:
+      context: ${back_path_host}
+      dockerfile: back-nginx.dockerfile
+    restart: unless-stopped
+    ports:
+      - 8042:80
+    volumes:
+      - ${back_path_host}:${back_path_container}
+    links:
+      - php
+    tty: true
+
+  php:
+    container_name: php
+    build:
+      context: ${back_path_host}
+      dockerfile: back-php.dockerfile
+    restart: unless-stopped
+    volumes:
+      - ${back_path_host}:${back_path_container}
+    working_dir: ${back_path_container}
+    links:
+      - fridg_db
+      - redis
+    tty: true
+    
+  fridg_db:
+    container_name: fridg_db
+    image: mariadb:10.6.4
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=42
+      - MARIADB_DATABASE=fridg
+      - MARIADB_USER=fridg
+      - MARIADB_PASSWORD=8kr659skY5EZM
+    volumes:
+      - ${back_db_path_host}:/var/lib/mysql
+    tty: true
+
+  adminer-db:
+    container_name: adminer-db
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8066:8080
+    links:
+      - fridg_db
+    tty: true
+
+  redis:
+    container_name: redis
+    image: redis:6.2.6
+    restart: unless-stopped
+    tty: true
+
+  composer:
+    container_name: composer
+    image: composer:2.2.4
+    restart: 'no'
+    volumes:
+      - ${back_path_host}:${back_path_container}
+    working_dir: ${back_path_container}
+    command: update
