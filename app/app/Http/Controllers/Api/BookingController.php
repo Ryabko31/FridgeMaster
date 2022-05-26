@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Location;
 use App\Helpers\CalculateHelpers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
@@ -101,8 +102,7 @@ class BookingController extends Controller
      */
     public function booking(Location $location, Request $request)
     {
-
-        //Потрібно змінити логіку формування замовлення в частині визначення, вільних блоків при бронюванні
-        return $this->return_success($this->booking::bookingSercives()->createBooking($location,  $request->booking, 1));
+            //Потрібно змінити логіку формування замовлення в частині визначення, вільних блоків при бронюванні
+        return $this->return_success($this->booking::bookingSercives()->createBooking($location,  $request->booking, Auth::user()->id));
     }
 }
